@@ -88,9 +88,10 @@ func (app *App) WelcomeCommentHandler(w http.ResponseWriter, r *http.Request) {
 		pkg.ErrorHandler(w, 405)
 		return
 	}
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil {
+	parts := strings.Split(r.URL.Path, "/")
 
+	id, err := strconv.Atoi(parts[3])
+	if err != nil {
 		log.Println(err)
 		pkg.ErrorHandler(w, 400)
 		return

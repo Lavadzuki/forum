@@ -18,7 +18,7 @@ func (app *App) Run(cfg config.Http) *http.Server {
 		"/sign-in",
 		"/sign-up",
 		"/welcome/filter/",
-		"/welcome/comment",
+		"/welcome/comment/",
 		"/post/like/",
 		"/post/dislike/",
 		"/post/comment/like/",
@@ -39,11 +39,11 @@ func (app *App) Run(cfg config.Http) *http.Server {
 	mux.HandleFunc("/filter/", app.authorizedMiddleware(app.FilterHandler)) // filter
 	mux.HandleFunc("/logout/", app.authorizedMiddleware(app.LogoutHandler)) // auth
 
-	mux.HandleFunc("/welcome/", app.nonAuthorizedMiddleware(app.WelcomeHandler))               // home
-	mux.HandleFunc("/sign-in", app.nonAuthorizedMiddleware(app.LoginHandler))                  // auth
-	mux.HandleFunc("/sign-up", app.nonAuthorizedMiddleware(app.RegisterHandler))               // auth
-	mux.HandleFunc("/welcome/filter/", app.nonAuthorizedMiddleware(app.WelcomeFilterHandler))  // filter
-	mux.HandleFunc("/welcome/comment", app.nonAuthorizedMiddleware(app.WelcomeCommentHandler)) // comment
+	mux.HandleFunc("/welcome/", app.nonAuthorizedMiddleware(app.WelcomeHandler))                // home
+	mux.HandleFunc("/sign-in", app.nonAuthorizedMiddleware(app.LoginHandler))                   // auth
+	mux.HandleFunc("/sign-up", app.nonAuthorizedMiddleware(app.RegisterHandler))                // auth
+	mux.HandleFunc("/welcome/filter/", app.nonAuthorizedMiddleware(app.WelcomeFilterHandler))   // filter
+	mux.HandleFunc("/welcome/comment/", app.nonAuthorizedMiddleware(app.WelcomeCommentHandler)) // comment
 
 	fs := http.FileServer(http.Dir("./templates/static"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
