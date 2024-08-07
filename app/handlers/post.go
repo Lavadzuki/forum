@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -10,11 +11,13 @@ import (
 )
 
 func (app *App) PostHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.Method)
 	switch r.Method {
 	case http.MethodGet:
 		pkg.RenderTemplate(w, "createpost.html", models.Data{})
 		return
 	case http.MethodPost:
+		fmt.Println("I am called!")
 		err := r.ParseForm()
 		if err != nil {
 			return

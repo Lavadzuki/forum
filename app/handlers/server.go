@@ -12,7 +12,7 @@ func (app *App) Run(cfg config.Http) *http.Server {
 		"/reaction",
 		"/post/comment/",
 		"/filter/",
-		"/post",
+		"/post/",
 		"/logout/",
 		"/welcome",
 		"/sign-in",
@@ -28,7 +28,7 @@ func (app *App) Run(cfg config.Http) *http.Server {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", app.authorizedMiddleware(app.HomeHandler))                  // home
-	mux.HandleFunc("/post", app.authorizedMiddleware(app.PostHandler))              // post
+	mux.HandleFunc("/post/", app.authorizedMiddleware(app.PostHandler))             // post
 	mux.HandleFunc("/post/like/", app.authorizedMiddleware(app.ReactionHandler))    // reaction
 	mux.HandleFunc("/post/dislike/", app.authorizedMiddleware(app.ReactionHandler)) // reaction
 

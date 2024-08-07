@@ -32,6 +32,8 @@ func (app *App) authorizedMiddleware(next http.HandlerFunc) http.HandlerFunc {
 
 		if url == "/" {
 			path = "/"
+		} else if url == "/post/" {
+			path = "/post/"
 		} else if parts[1] == "filter" {
 			path = "/filter/"
 		} else if parts[1] == "logout" {
