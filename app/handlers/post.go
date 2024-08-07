@@ -27,7 +27,7 @@ func (app *App) PostHandler(w http.ResponseWriter, r *http.Request) {
 		genre := r.Form["category"]
 
 		if len(genre) == 0 {
-			pkg.ErrorHandler(w, "You must select at least one category.", http.StatusBadRequest)
+			http.Error(w, "You must select at least one category.", http.StatusBadRequest)
 			return
 		}
 		user, ok := r.Context().Value(KeyUserType(keyUser)).(models.User)
