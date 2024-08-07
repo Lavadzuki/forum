@@ -11,6 +11,11 @@ import (
 
 func NewDB(cfg config.Database) (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", cfg.Dbname)
+	err = db.Ping()
+	if err != nil {
+		log.Fatalln("cannot ping a database")
+		return nil, err
+	}
 	if err != nil {
 		return nil, err
 	}

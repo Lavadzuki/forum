@@ -28,11 +28,6 @@ func main() {
 		log.Fatalln(err)
 		return
 	}
-	err = db.Ping()
-	if err != nil {
-		log.Fatalln("cannot ping a database")
-		return
-	}
 
 	repo := repository.NewRepo(db)
 	authservice := auth.NewAuthService(repo)
