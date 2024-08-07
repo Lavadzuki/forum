@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -23,6 +24,11 @@ func main() {
 		log.Fatalln(err)
 		return
 	}
+
+	if cfg.ServerAddress != cfg.Port {
+		fmt.Sprintf(cfg.ServerAddress+":", cfg.Port)
+	}
+
 	db, err := repository.NewDB(cfg.Database)
 	if err != nil {
 		log.Fatalln(err)
@@ -43,7 +49,7 @@ func main() {
 	go app.ClearSession()
 
 	go func() {
-		log.Printf("server started at %s", cfg.ServerAddress)
+		log.Printf("server started at http://localhost%s", cfg.Port)
 		err := server.ListenAndServe()
 		if err != nil {
 			log.Printf("listen %s ", err)
