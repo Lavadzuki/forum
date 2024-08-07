@@ -34,6 +34,7 @@ func main() {
 		log.Fatalln(err)
 		return
 	}
+	defer db.Close()
 
 	repo := repository.NewRepo(db)
 	authservice := auth.NewAuthService(repo)
