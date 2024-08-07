@@ -28,6 +28,11 @@ func (app *App) authorizedMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		path := ""
 		parts := strings.Split(url, "/")
 
+		if len(parts) == 2 && url != "/" {
+			pkg.ErrorHandler(w, http.StatusNotFound)
+			return
+		}
+
 		if url == "/" {
 			path = "/"
 		} else if url == "/post/" {
