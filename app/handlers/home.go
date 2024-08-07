@@ -37,6 +37,7 @@ func (app *App) HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) WelcomeHandler(w http.ResponseWriter, r *http.Request) {
+	// fmt.Print("welcome to welcome")
 	if r.Method != http.MethodGet {
 
 		pkg.ErrorHandler(w, 405)

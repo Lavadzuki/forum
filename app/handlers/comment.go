@@ -83,6 +83,7 @@ func (app *App) CommentHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) WelcomeCommentHandler(w http.ResponseWriter, r *http.Request) {
+	// fmt.Println("welcome to welcome")
 	if r.Method != http.MethodPost {
 		pkg.ErrorHandler(w, 405)
 		return

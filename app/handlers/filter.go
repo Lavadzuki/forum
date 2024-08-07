@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -10,7 +9,7 @@ import (
 )
 
 func (app *App) FilterHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Filter called: ", r.URL.Path)
+	// fmt.Println("Filter called: ", r.URL.Path)
 	parts := strings.Split(r.URL.Path, "/")
 	category := parts[2]
 
@@ -41,7 +40,10 @@ func (app *App) WelcomeFilterHandler(w http.ResponseWriter, r *http.Request) {
 		pkg.ErrorHandler(w, 405)
 		return
 	}
-	category := r.URL.Query().Get("category")
+	// fmt.Println("Filter called: ", r.URL.Path)
+	parts := strings.Split(r.URL.Path, "/")
+	category := parts[3]
+	// fmt.Println("Category: ", category)
 	data, status := app.postService.GetWelcomeFilterPosts(category)
 	switch status {
 	case 500:
