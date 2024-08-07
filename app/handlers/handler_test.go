@@ -27,12 +27,12 @@ func TestAuthHandlers(t *testing.T) {
 	}{
 		{
 			handler:        "Login",
-			name:           "Case status 200",
+			name:           "Case status http.StatusOK",
 			method:         "GET",
 			path:           "/sign-in",
 			reader:         nil,
-			expected:       "Status 200",
-			expectedStatus: 200,
+			expected:       "Status http.StatusOK",
+			expectedStatus: http.StatusOK,
 		},
 		{
 			handler:        "Login",
@@ -41,7 +41,7 @@ func TestAuthHandlers(t *testing.T) {
 			path:           "/sign-in",
 			reader:         nil,
 			expected:       "status found",
-			expectedStatus: 302,
+			expectedStatus: http.StatusFound,
 		},
 		{
 			handler:        "Login",
@@ -50,7 +50,7 @@ func TestAuthHandlers(t *testing.T) {
 			path:           "/sign-in",
 			reader:         nil,
 			expected:       "status method not allowed",
-			expectedStatus: 405,
+			expectedStatus: http.StatusMethodNotAllowed,
 		},
 		{
 			handler:        "Register",
@@ -59,7 +59,7 @@ func TestAuthHandlers(t *testing.T) {
 			path:           "/sign-up",
 			reader:         nil,
 			expected:       "status found",
-			expectedStatus: 302,
+			expectedStatus: http.StatusFound,
 		},
 		{
 			handler:        "Register",
@@ -68,7 +68,7 @@ func TestAuthHandlers(t *testing.T) {
 			path:           "/sign-in",
 			reader:         nil,
 			expected:       "status method not allowed",
-			expectedStatus: 405,
+			expectedStatus: http.StatusMethodNotAllowed,
 		},
 		{
 			handler:        "Logout",
@@ -76,7 +76,7 @@ func TestAuthHandlers(t *testing.T) {
 			method:         "POST",
 			reader:         nil,
 			expected:       "method not allowed",
-			expectedStatus: 405,
+			expectedStatus: http.StatusMethodNotAllowed,
 		},
 		{
 			handler:        "Comment",
@@ -84,7 +84,7 @@ func TestAuthHandlers(t *testing.T) {
 			method:         "POST",
 			reader:         nil,
 			expected:       "status badrequest",
-			expectedStatus: 400,
+			expectedStatus: http.StatusBadRequest,
 		},
 	}
 	cfg, err := config.InitConfig("./config/config.json")

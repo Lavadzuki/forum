@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 
 	"forum/app/models"
@@ -24,19 +25,19 @@ func (p postService) GetAllPosts() ([]models.Post, error) {
 func (p postService) CreatePost(post *models.Post) (int, error) {
 	ok := validDataString(post.Title)
 	if !ok {
-		return 400, errors.New("title is invalid")
+		return http.StatusBadRequest, errors.New("title is invalid")
 	}
 
 	if !ok {
-		return 400, errors.New("content is invalid")
+		return http.StatusBadRequest, errors.New("content is invalid")
 	}
 	ok = validCategory(post.Category)
 	if !ok {
-		return 400, errors.New("category is invalid")
+		return http.StatusBadRequest, errors.New("category is invalid")
 	}
 	id, err := p.repository.CreatePost(*post)
 	if err != nil {
-		return 500, errors.New("creating a post was failed")
+		return http.StatusInternalServerError, errors.New("creating a post was failed")
 	}
 	categories := models.Category{
 		CategoryName: post.Category,
@@ -44,22 +45,22 @@ func (p postService) CreatePost(post *models.Post) (int, error) {
 	}
 	err = p.repository.CreateCategory(&categories)
 	if err != nil {
-		return 500, errors.New("creating a category was failed")
+		return http.StatusInternalServerError, errors.New("creating a category was failed")
 	}
-	return 200, nil
+	return http.StatusOK, nil
 }
 
 func (p postService) GetAllCommentsAndPostsByPostId(id int64) (models.Post, int) {
 	initialPost, err := p.repository.GetPostById(id)
 	if err != nil {
 		log.Println(err)
-		return models.Post{}, 400
+		return models.Post{}, http.StatusBadRequest
 	}
 	comments, err := p.repository.GetAllCommentByPostId(int(id))
 	if err != nil {
 		fmt.Println(2)
 		log.Println(err)
-		return models.Post{}, 500
+		return models.Post{}, http.StatusInternalServerError
 	}
 
 	sortedComments := []models.Comment{}
@@ -68,24 +69,24 @@ func (p postService) GetAllCommentsAndPostsByPostId(id int64) (models.Post, int)
 		sortedComments = append(sortedComments, comments[i])
 	}
 	initialPost.Comment = sortedComments
-	return initialPost, 200
+	return initialPost, http.StatusOK
 }
 
 func (p postService) CreateComment(comment *models.Comment) (int, error) {
 	ok := validDataString(comment.Message)
 	if !ok {
-		return 400, errors.New("comment message is invalid")
+		return http.StatusBadRequest, errors.New("comment message is invalid")
 	}
 	_, err := p.repository.GetPostById(comment.PostId)
 	if err != nil {
-		return 400, errors.New("post doesnt exists")
+		return http.StatusBadRequest, errors.New("post doesnt exists")
 	}
 	err = p.repository.CommentPost(*comment)
 	if err != nil {
 		log.Println(err)
-		return 500, errors.New("comment post was failed")
+		return http.StatusInternalServerError, errors.New("comment post was failed")
 	}
-	return 200, nil
+	return http.StatusOK, nil
 }
 
 func validDataString(s string) bool {

@@ -16,25 +16,25 @@ func RenderTemplate(w http.ResponseWriter, template string, data models.Data) {
 	err := createTemplate()
 	if err != nil {
 		log.Println(err)
-		ErrorHandler(w, 500)
+		ErrorHandler(w, http.StatusInternalServerError)
 		return
 	}
 	t, ok := templateCache[template]
 	if !ok {
 		log.Println(err)
-		ErrorHandler(w, 500)
+		ErrorHandler(w, http.StatusInternalServerError)
 		return
 	}
 	buf := new(bytes.Buffer)
 	err = t.Execute(buf, data)
 	if err != nil {
 		log.Println(err)
-		ErrorHandler(w, 500)
+		ErrorHandler(w, http.StatusInternalServerError)
 	}
 	_, err = buf.WriteTo(w)
 	if err != nil {
 		log.Println(err)
-		ErrorHandler(w, 500)
+		ErrorHandler(w, http.StatusInternalServerError)
 		return
 	}
 }

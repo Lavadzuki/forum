@@ -17,7 +17,7 @@ func (app *App) ReactionHandler(w http.ResponseWriter, r *http.Request) {
 	isMainPage := r.FormValue("isMainPage")
 	category := r.FormValue("FILTER")
 	if r.Method != http.MethodPost {
-		pkg.ErrorHandler(w, 405)
+		pkg.ErrorHandler(w, http.StatusMethodNotAllowed)
 		return
 	}
 	parts := strings.Split(r.URL.Path, "/")
@@ -25,7 +25,7 @@ func (app *App) ReactionHandler(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(parts[3])
 		if err != nil {
 			log.Println(err)
-			pkg.ErrorHandler(w, 500)
+			pkg.ErrorHandler(w, http.StatusInternalServerError)
 			return
 		}
 		ID = id
@@ -34,7 +34,7 @@ func (app *App) ReactionHandler(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(parts[4])
 		if err != nil {
 			log.Println(err)
-			pkg.ErrorHandler(w, 500)
+			pkg.ErrorHandler(w, http.StatusInternalServerError)
 			return
 		}
 		ID = id
@@ -43,14 +43,14 @@ func (app *App) ReactionHandler(w http.ResponseWriter, r *http.Request) {
 		commentiD, err := strconv.Atoi(parts[5])
 		if err != nil {
 			log.Println(err)
-			pkg.ErrorHandler(w, 500)
+			pkg.ErrorHandler(w, http.StatusInternalServerError)
 			return
 		}
 		commentID = commentiD
 	}
 	user, ok := r.Context().Value(KeyUserType(keyUser)).(models.User)
 	if !ok {
-		pkg.ErrorHandler(w, 401)
+		pkg.ErrorHandler(w, http.StatusUnauthorized)
 		return
 	}
 
@@ -60,96 +60,96 @@ func (app *App) ReactionHandler(w http.ResponseWriter, r *http.Request) {
 	case "/post/like":
 		status := app.postService.LikePost(ID, int(user.ID))
 		switch status {
-		case 500:
-			pkg.ErrorHandler(w, 500)
+		case http.StatusInternalServerError:
+			pkg.ErrorHandler(w, http.StatusInternalServerError)
 			return
-		case 400:
-			pkg.ErrorHandler(w, 400)
+		case http.StatusBadRequest:
+			pkg.ErrorHandler(w, http.StatusBadRequest)
 			return
-		case 200:
+		case http.StatusOK:
 
 			switch category {
 			case "liked-post":
-				http.Redirect(w, r, "/filter/liked-post/", 302)
+				http.Redirect(w, r, "/filter/liked-post/", http.StatusFound)
 			case "created-post":
-				http.Redirect(w, r, "/filter/created-post/", 302)
+				http.Redirect(w, r, "/filter/created-post/", http.StatusFound)
 			case "romance":
-				http.Redirect(w, r, "/filter/romance/", 302)
+				http.Redirect(w, r, "/filter/romance/", http.StatusFound)
 			case "adventure":
-				http.Redirect(w, r, "/filter/adventure/", 302)
+				http.Redirect(w, r, "/filter/adventure/", http.StatusFound)
 			case "comedy":
-				http.Redirect(w, r, "/filter/comedy/", 302)
+				http.Redirect(w, r, "/filter/comedy/", http.StatusFound)
 			case "drama":
-				http.Redirect(w, r, "/filter/drama/", 302)
+				http.Redirect(w, r, "/filter/drama/", http.StatusFound)
 			case "fantasy":
-				http.Redirect(w, r, "/filter/fantasy/", 302)
+				http.Redirect(w, r, "/filter/fantasy/", http.StatusFound)
 			}
 
 			if isMainPage == "true" {
-				http.Redirect(w, r, "/", 302)
+				http.Redirect(w, r, "/", http.StatusFound)
 			} else {
-				http.Redirect(w, r, "/post/comment/"+strconv.Itoa(ID), 302)
+				http.Redirect(w, r, "/post/comment/"+strconv.Itoa(ID), http.StatusFound)
 			}
 		}
 	case "/post/dislike":
 		status := app.postService.DislikePost(ID, int(user.ID))
 		switch status {
-		case 500:
-			pkg.ErrorHandler(w, 500)
+		case http.StatusInternalServerError:
+			pkg.ErrorHandler(w, http.StatusInternalServerError)
 			return
-		case 400:
-			pkg.ErrorHandler(w, 400)
+		case http.StatusBadRequest:
+			pkg.ErrorHandler(w, http.StatusBadRequest)
 			return
-		case 200:
+		case http.StatusOK:
 			switch category {
 			case "liked-post":
-				http.Redirect(w, r, "/filter/liked-post/", 302)
+				http.Redirect(w, r, "/filter/liked-post/", http.StatusFound)
 			case "created-post":
-				http.Redirect(w, r, "/filter/created-post/", 302)
+				http.Redirect(w, r, "/filter/created-post/", http.StatusFound)
 			case "romance":
-				http.Redirect(w, r, "/filter/romance/", 302)
+				http.Redirect(w, r, "/filter/romance/", http.StatusFound)
 			case "adventure":
-				http.Redirect(w, r, "/filter/adventure/", 302)
+				http.Redirect(w, r, "/filter/adventure/", http.StatusFound)
 			case "comedy":
-				http.Redirect(w, r, "/filter/comedy/", 302)
+				http.Redirect(w, r, "/filter/comedy/", http.StatusFound)
 			case "drama":
-				http.Redirect(w, r, "/filter/drama/", 302)
+				http.Redirect(w, r, "/filter/drama/", http.StatusFound)
 			case "fantasy":
-				http.Redirect(w, r, "/filter/fantasy/", 302)
+				http.Redirect(w, r, "/filter/fantasy/", http.StatusFound)
 			}
 
 			if isMainPage == "true" {
-				http.Redirect(w, r, "/", 302)
+				http.Redirect(w, r, "/", http.StatusFound)
 			} else {
-				http.Redirect(w, r, "/post/comment/"+strconv.Itoa(ID), 302)
+				http.Redirect(w, r, "/post/comment/"+strconv.Itoa(ID), http.StatusFound)
 			}
 		}
 	case "/post/comment/like":
 		status := app.postService.LikeComment(commentID, int(user.ID))
 		switch status {
-		case 500:
-			pkg.ErrorHandler(w, 500)
+		case http.StatusInternalServerError:
+			pkg.ErrorHandler(w, http.StatusInternalServerError)
 			return
-		case 400:
-			pkg.ErrorHandler(w, 400)
+		case http.StatusBadRequest:
+			pkg.ErrorHandler(w, http.StatusBadRequest)
 			return
-		case 200:
-			http.Redirect(w, r, "/post/comment/"+strconv.Itoa(ID), 302)
+		case http.StatusOK:
+			http.Redirect(w, r, "/post/comment/"+strconv.Itoa(ID), http.StatusFound)
 		}
 	case "/post/comment/dislike":
 		status := app.postService.DislikeComment(commentID, int(user.ID))
 		switch status {
-		case 500:
-			pkg.ErrorHandler(w, 500)
+		case http.StatusInternalServerError:
+			pkg.ErrorHandler(w, http.StatusInternalServerError)
 			return
-		case 400:
-			pkg.ErrorHandler(w, 400)
+		case http.StatusBadRequest:
+			pkg.ErrorHandler(w, http.StatusBadRequest)
 			return
-		case 200:
-			http.Redirect(w, r, "/post/comment/"+strconv.Itoa(ID), 302)
+		case http.StatusOK:
+			http.Redirect(w, r, "/post/comment/"+strconv.Itoa(ID), http.StatusFound)
 		}
 
 	default:
-		pkg.ErrorHandler(w, 404)
+		pkg.ErrorHandler(w, http.StatusNotFound)
 	}
 }

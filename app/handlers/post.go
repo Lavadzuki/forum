@@ -27,7 +27,7 @@ func (app *App) PostHandler(w http.ResponseWriter, r *http.Request) {
 		genre := r.Form["category"]
 		user, ok := r.Context().Value(KeyUserType(keyUser)).(models.User)
 		if !ok {
-			pkg.ErrorHandler(w, 401)
+			pkg.ErrorHandler(w, http.StatusUnauthorized)
 			return
 		}
 		post := models.Post{
@@ -41,18 +41,18 @@ func (app *App) PostHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 			switch status {
-			case 500:
-				pkg.ErrorHandler(w, 500)
+			case http.StatusInternalServerError:
+				pkg.ErrorHandler(w, http.StatusInternalServerError)
 				return
-			case 400:
-				pkg.ErrorHandler(w, 400)
+			case http.StatusBadRequest:
+				pkg.ErrorHandler(w, http.StatusBadRequest)
 				return
 			}
 		}
-		http.Redirect(w, r, "/", 302)
+		http.Redirect(w, r, "/", http.StatusFound)
 
 	default:
-		pkg.ErrorHandler(w, 405)
+		pkg.ErrorHandler(w, http.StatusMethodNotAllowed)
 		return
 	}
 }

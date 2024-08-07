@@ -20,19 +20,18 @@ func (app *App) CommentHandler(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(parts[3])
 		if err != nil {
 			log.Println(err)
-			pkg.ErrorHandler(w, 404)
+			pkg.ErrorHandler(w, http.StatusNotFound)
 			return
 		}
 		initialPost, status := app.postService.GetAllCommentsAndPostsByPostId(int64(id))
 		switch status {
-		case 405:
-			pkg.ErrorHandler(w, 500)
+		case http.StatusMethodNotAllowed:
+			pkg.ErrorHandler(w, http.StatusInternalServerError)
 			return
-		case 400:
-			pkg.ErrorHandler(w, 400)
+		case http.StatusBadRequest:
+			pkg.ErrorHandler(w, http.StatusBadRequest)
 			return
 		}
-
 		data := models.Data{
 			Comment:     initialPost.Comment,
 			InitialPost: initialPost,
@@ -45,14 +44,14 @@ func (app *App) CommentHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(id)
 		if err != nil {
 			log.Println(err)
-			pkg.ErrorHandler(w, 404)
+			pkg.ErrorHandler(w, http.StatusNotFound)
 			return
 		}
 		message := r.FormValue("comment")
 		path := "/post/comment/" + parts[3]
 		user, ok := r.Context().Value(KeyUserType(keyUser)).(models.User)
 		if !ok {
-			pkg.ErrorHandler(w, 401) // 401-status unauthorized
+			pkg.ErrorHandler(w, http.StatusUnauthorized) // http.StatusUnauthorized-status unauthorized
 			return
 		}
 		comment := models.Comment{
@@ -68,24 +67,24 @@ func (app *App) CommentHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		switch status {
-		case 500:
-			pkg.ErrorHandler(w, 500)
+		case http.StatusInternalServerError:
+			pkg.ErrorHandler(w, http.StatusInternalServerError)
 			return
-		case 400:
-			pkg.ErrorHandler(w, 400)
+		case http.StatusBadRequest:
+			pkg.ErrorHandler(w, http.StatusBadRequest)
 			return
-		case 200:
-			http.Redirect(w, r, path, 302)
+		case http.StatusOK:
+			http.Redirect(w, r, path, http.StatusFound)
 		}
 	default:
-		pkg.ErrorHandler(w, 405)
+		pkg.ErrorHandler(w, http.StatusMethodNotAllowed)
 	}
 }
 
 func (app *App) WelcomeCommentHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println("welcome to welcome")
 	if r.Method != http.MethodPost {
-		pkg.ErrorHandler(w, 405)
+		pkg.ErrorHandler(w, http.StatusMethodNotAllowed)
 		return
 	}
 	parts := strings.Split(r.URL.Path, "/")
@@ -93,16 +92,16 @@ func (app *App) WelcomeCommentHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(parts[3])
 	if err != nil {
 		log.Println(err)
-		pkg.ErrorHandler(w, 400)
+		pkg.ErrorHandler(w, http.StatusBadRequest)
 		return
 	}
 	initialPost, status := app.postService.GetAllCommentsAndPostsByPostId(int64(id))
 	switch status {
-	case 500:
-		pkg.ErrorHandler(w, 500)
+	case http.StatusInternalServerError:
+		pkg.ErrorHandler(w, http.StatusInternalServerError)
 		return
-	case 400:
-		pkg.ErrorHandler(w, 400)
+	case http.StatusBadRequest:
+		pkg.ErrorHandler(w, http.StatusBadRequest)
 		return
 	}
 	data := models.Data{

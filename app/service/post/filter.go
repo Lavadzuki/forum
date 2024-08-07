@@ -1,6 +1,7 @@
 package post
 
 import (
+	"net/http"
 	"strings"
 
 	"forum/app/models"
@@ -9,7 +10,7 @@ import (
 func (p postService) GetFilterPosts(genre string, user models.User) (models.Data, int) {
 	ok := validCategoryFilter(genre)
 	if !ok {
-		return models.Data{}, 400
+		return models.Data{}, http.StatusBadRequest
 	}
 
 	var posts []models.Post
@@ -20,7 +21,7 @@ func (p postService) GetFilterPosts(genre string, user models.User) (models.Data
 		for _, v := range postId {
 			post, err := p.repository.GetPostById(v)
 			if err != nil {
-				return models.Data{}, 400
+				return models.Data{}, http.StatusBadRequest
 			}
 			posts = append(posts, post)
 		}
@@ -29,7 +30,7 @@ func (p postService) GetFilterPosts(genre string, user models.User) (models.Data
 			User:  user,
 			Genre: "liked-post",
 		}
-		return data, 200
+		return data, http.StatusOK
 
 	case "created-post":
 		allPosts, _ := p.repository.GetAllPosts()
@@ -43,12 +44,12 @@ func (p postService) GetFilterPosts(genre string, user models.User) (models.Data
 			User:  user,
 			Genre: "created-post",
 		}
-		return data, 200
+		return data, http.StatusOK
 
 	default:
 		categories, err := p.repository.GetCategory()
 		if err != nil {
-			return models.Data{}, 500
+			return models.Data{}, http.StatusInternalServerError
 		}
 
 		var postIds []int64
@@ -64,7 +65,7 @@ func (p postService) GetFilterPosts(genre string, user models.User) (models.Data
 		for _, v := range postIds {
 			post, err := p.repository.GetPostById(v)
 			if err != nil {
-				return models.Data{}, 500
+				return models.Data{}, http.StatusInternalServerError
 			}
 			posts = append(posts, post)
 		}
@@ -74,14 +75,14 @@ func (p postService) GetFilterPosts(genre string, user models.User) (models.Data
 			User:  user,
 			Genre: genre,
 		}
-		return data, 200
+		return data, http.StatusOK
 	}
 }
 
 func (p postService) GetWelcomeFilterPosts(genre string) (models.Data, int) {
 	ok := validCategoryWelcome(genre)
 	if !ok {
-		return models.Data{}, 500
+		return models.Data{}, http.StatusInternalServerError
 	}
 
 	var postIds []int64
@@ -89,7 +90,7 @@ func (p postService) GetWelcomeFilterPosts(genre string) (models.Data, int) {
 
 	categories, err := p.repository.GetCategory()
 	if err != nil {
-		return models.Data{}, 500
+		return models.Data{}, http.StatusInternalServerError
 	}
 
 	for _, v := range categories {
@@ -104,7 +105,7 @@ func (p postService) GetWelcomeFilterPosts(genre string) (models.Data, int) {
 	for _, postId := range postIds {
 		post, err := p.repository.GetPostById(postId)
 		if err != nil {
-			return models.Data{}, 500
+			return models.Data{}, http.StatusInternalServerError
 		}
 		posts = append(posts, post)
 	}
@@ -113,7 +114,7 @@ func (p postService) GetWelcomeFilterPosts(genre string) (models.Data, int) {
 		Posts: posts,
 		Genre: genre,
 	}
-	return data, 200
+	return data, http.StatusOK
 }
 
 func validCategory(categories []string) bool {

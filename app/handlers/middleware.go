@@ -25,10 +25,8 @@ func AddAuthPath(paths ...string) {
 func (app *App) authorizedMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		url := r.URL.Path
-		fmt.Println(url)
 		path := ""
 		parts := strings.Split(url, "/")
-		fmt.Println(parts)
 
 		if url == "/" {
 			path = "/"
@@ -50,28 +48,28 @@ func (app *App) authorizedMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		} else {
 			path = "/" + parts[1] + "/" + parts[2] + "/"
 			if len(parts) < 4 {
-				pkg.ErrorHandler(w, 404)
+				pkg.ErrorHandler(w, http.StatusNotFound)
 				return
 			}
 		}
 		// fmt.Println("AuthPath[path]: ", AuthPaths)
 		if _, ok := AuthPaths[path]; !ok {
-			pkg.ErrorHandler(w, 404)
+			pkg.ErrorHandler(w, http.StatusNotFound)
 			return
 		}
 		cookie, err := r.Cookie("session_token")
 		if err != nil {
-			http.Redirect(w, r, "/sign-in", 302)
+			http.Redirect(w, r, "/sign-in", http.StatusFound)
 			return
 		}
 
 		session, err := app.sessionService.GetSessionByToken(cookie.Value)
 		if err != nil {
-			http.Redirect(w, r, "/sign-in", 302)
+			http.Redirect(w, r, "/sign-in", http.StatusFound)
 			return
 		}
 		if session.Expiry.Before(time.Now()) {
-			http.Redirect(w, r, "/sign-in", 302)
+			http.Redirect(w, r, "/sign-in", http.StatusFound)
 			return
 		}
 
@@ -121,6 +119,6 @@ func (app *App) nonAuthorizedMiddleware(next http.HandlerFunc) http.HandlerFunc 
 			next.ServeHTTP(w, r)
 			return
 		}
-		http.Redirect(w, r, "/", 302)
+		http.Redirect(w, r, "/", http.StatusFound)
 	})
 }

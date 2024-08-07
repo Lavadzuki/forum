@@ -14,30 +14,30 @@ func (app *App) FilterHandler(w http.ResponseWriter, r *http.Request) {
 	category := parts[2]
 
 	if r.Method != http.MethodGet {
-		pkg.ErrorHandler(w, 405)
+		pkg.ErrorHandler(w, http.StatusMethodNotAllowed)
 		return
 	}
 	user, ok := r.Context().Value(KeyUserType(keyUser)).(models.User)
 	if !ok {
-		pkg.ErrorHandler(w, 401)
+		pkg.ErrorHandler(w, http.StatusUnauthorized)
 		return
 	}
 	data, status := app.postService.GetFilterPosts(category, user)
 	switch status {
-	case 500:
-		pkg.ErrorHandler(w, 500)
+	case http.StatusInternalServerError:
+		pkg.ErrorHandler(w, http.StatusInternalServerError)
 		return
-	case 400:
-		pkg.ErrorHandler(w, 400)
+	case http.StatusBadRequest:
+		pkg.ErrorHandler(w, http.StatusBadRequest)
 		return
-	case 200:
+	case http.StatusOK:
 		pkg.RenderTemplate(w, "filter.html", data)
 	}
 }
 
 func (app *App) WelcomeFilterHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		pkg.ErrorHandler(w, 405)
+		pkg.ErrorHandler(w, http.StatusMethodNotAllowed)
 		return
 	}
 	// fmt.Println("Filter called: ", r.URL.Path)
@@ -46,13 +46,13 @@ func (app *App) WelcomeFilterHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println("Category: ", category)
 	data, status := app.postService.GetWelcomeFilterPosts(category)
 	switch status {
-	case 500:
-		pkg.ErrorHandler(w, 500)
+	case http.StatusInternalServerError:
+		pkg.ErrorHandler(w, http.StatusInternalServerError)
 		return
-	case 400:
-		pkg.ErrorHandler(w, 400)
+	case http.StatusBadRequest:
+		pkg.ErrorHandler(w, http.StatusBadRequest)
 		return
-	case 200:
+	case http.StatusOK:
 		pkg.RenderTemplate(w, "welcome.html", data)
 	}
 }

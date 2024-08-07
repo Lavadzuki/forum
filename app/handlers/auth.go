@@ -21,14 +21,14 @@ func (app *App) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		user, err := getUser(r)
 		if err != nil {
 			Messages.Message = "Wrong password or email"
-			http.Redirect(w, r, "/sign-in", 302)
+			http.Redirect(w, r, "/sign-in", http.StatusFound)
 			log.Println(err)
 			return
 		}
 		session, err := app.authService.Login(&user)
 		if err != nil {
 			Messages.Message = "Wrong password or email"
-			http.Redirect(w, r, "/sign-in", 302)
+			http.Redirect(w, r, "/sign-in", http.StatusFound)
 			return
 		}
 		http.SetCookie(w, &http.Cookie{
@@ -40,10 +40,10 @@ func (app *App) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Sessions = append(Sessions, session)
 		fmt.Println(Sessions)
 
-		http.Redirect(w, r, "/", 302)
+		http.Redirect(w, r, "/", http.StatusFound)
 
 	default:
-		pkg.ErrorHandler(w, 405)
+		pkg.ErrorHandler(w, http.StatusMethodNotAllowed)
 		return
 	}
 }
@@ -57,7 +57,7 @@ func (app *App) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		user, err := getUser(r)
 		if err != nil {
 			Messages.Message = "wrong user data"
-			http.Redirect(w, r, "/sign-up", 302)
+			http.Redirect(w, r, "/sign-up", http.StatusFound)
 			log.Println(err)
 			return
 		}
@@ -65,26 +65,26 @@ func (app *App) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Printf("user %s sign up was failed", user.Email)
 			Messages.Message = "user already exists"
-			http.Redirect(w, r, "/sign-up", 302)
+			http.Redirect(w, r, "/sign-up", http.StatusFound)
 			return
 		}
-		http.Redirect(w, r, "/sign-in", 302)
+		http.Redirect(w, r, "/sign-in", http.StatusFound)
 		return
 	default:
-		pkg.ErrorHandler(w, 405)
+		pkg.ErrorHandler(w, http.StatusMethodNotAllowed)
 	}
 }
 
 func (app *App) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		pkg.ErrorHandler(w, 405)
+		pkg.ErrorHandler(w, http.StatusMethodNotAllowed)
 		return
 	}
 	c, err := r.Cookie("session_token")
 	if err == nil {
 		app.authService.Logout(c.Value)
 	}
-	http.Redirect(w, r, "/welcome", 302)
+	http.Redirect(w, r, "/welcome", http.StatusFound)
 }
 
 func getUser(r *http.Request) (models.User, error) {
