@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"strings"
 
 	"forum/app/models"
 )
@@ -39,7 +40,8 @@ func (u *userQuery) GetUserByUserId(userId int) (models.User, error) {
 }
 
 func (u *userQuery) GetUserByEmail(email string) (models.User, error) {
-	row := u.db.QueryRow(`select user_id,email,password,username from users where email=?`, email)
+	mail := strings.ToLower(email)
+	row := u.db.QueryRow(`select user_id,email,password,username from users where email=?`, mail)
 	var user models.User
 	err := row.Scan(&user.ID, &user.Email, &user.Password, &user.Username)
 	if err != nil {
@@ -49,7 +51,8 @@ func (u *userQuery) GetUserByEmail(email string) (models.User, error) {
 }
 
 func (u *userQuery) GetUserByUsername(username string) (models.User, error) {
-	row := u.db.QueryRow(`select user_id,email,password,username from users where username=?`, username)
+	userName := strings.ToLower(username)
+	row := u.db.QueryRow(`select user_id,email,password,username from users where username=?`, userName)
 	var user models.User
 	err := row.Scan(&user.ID, &user.Email, &user.Password, &user.Username)
 	if err != nil {
