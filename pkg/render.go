@@ -6,27 +6,35 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"sync"
 
 	"forum/app/models"
 )
 
-var templateCache = make(map[string]*template.Template)
+var (
+	templateCache = make(map[string]*template.Template)
+	once          sync.Once
+)
 
 func RenderTemplate(w http.ResponseWriter, template string, data models.Data) {
-	err := createTemplate()
-	if err != nil {
-		log.Println(err)
-		ErrorHandler(w, http.StatusInternalServerError)
-		return
-	}
+	once.Do(func() {
+		err := createTemplate()
+		if err != nil {
+			log.Println(err)
+			ErrorHandler(w, http.StatusInternalServerError)
+			return
+		}
+
+	})
+
 	t, ok := templateCache[template]
 	if !ok {
-		log.Println(err)
+
 		ErrorHandler(w, http.StatusInternalServerError)
 		return
 	}
 	buf := new(bytes.Buffer)
-	err = t.Execute(buf, data)
+	err := t.Execute(buf, data)
 	if err != nil {
 		log.Println(err)
 		ErrorHandler(w, http.StatusInternalServerError)
